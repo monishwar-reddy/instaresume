@@ -2,73 +2,47 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>InstaResume Builder</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
   <style>
     body {
-      margin: 0;
       font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #e0f7fa, #ffe0f7);
-      background-attachment: fixed;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      background: linear-gradient(to right, #e0f7fa, #ffe0f7);
       padding: 2rem;
     }
-
-    .theme-selector {
-      margin-bottom: 1rem;
-    }
-
-    .resume-container {
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-      padding: 2rem;
-      max-width: 800px;
-      width: 100%;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 1.5rem;
-    }
-
-    select, button {
-      padding: 0.5rem 1rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-
-    .color-palette {
-      display: flex;
-      gap: 0.5rem;
-      justify-content: center;
+    .extra-box {
       margin-top: 1rem;
     }
-
-    .color-button {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      border: 2px solid white;
+    .template-option {
+      padding: 0.5rem;
+      border: 1px solid #ccc;
+      border-radius: 0.25rem;
       cursor: pointer;
-      transition: transform 0.2s;
+      text-align: center;
     }
-
-    .color-button:hover {
-      transform: scale(1.1);
+    .template-option:hover {
+      background-color: #f0f0f0;
+    }
+    .template-box {
+      width: 100px;
+      height: 50px;
+      border-radius: 0.5rem;
+      border: 2px solid #ddd;
     }
   </style>
 </head>
-<body class="bg-gray-200 p-6">
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
-    <h1 class="text-3xl font-bold mb-4">InstaResume Builder</h1>
+<body>
+  <div class="sticky top-0 bg-white shadow-md p-4 z-50 flex justify-between items-center">
+    <h1 class="text-xl font-bold">InstaResume Builder</h1>
+    <div class="space-x-2">
+      <button id="generateSummaryBtn" class="bg-indigo-600 text-white px-3 py-1 rounded">Generate AI Summary</button>
+      <button id="downloadBtn" class="bg-green-600 text-white px-3 py-1 rounded">Download PDF</button>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto mt-4 bg-white p-6 rounded shadow">
     <form id="resumeForm" class="space-y-4">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <input id="fullName" placeholder="Full Name" class="p-2 border rounded" required />
@@ -78,52 +52,52 @@
         <input id="github" placeholder="GitHub URL" class="p-2 border rounded" />
         <input id="photo" type="file" accept="image/*" class="p-2 border rounded" />
       </div>
-      <textarea id="summary" placeholder="Professional Summary" class="w-full p-2 border rounded" rows="3"></textarea>
+
+      <textarea id="summary" placeholder="Professional Summary (You can auto-generate too)" class="w-full p-2 border rounded" rows="3"></textarea>
       <textarea id="experience" placeholder="Work Experience" class="w-full p-2 border rounded" rows="3"></textarea>
       <textarea id="education" placeholder="Education" class="w-full p-2 border rounded" rows="3"></textarea>
-      <textarea id="skills" placeholder="Skills" class="w-full p-2 border rounded" rows="2"></textarea>
-      <textarea id="languages" placeholder="Languages" class="w-full p-2 border rounded" rows="2"></textarea>
+      <textarea id="skills" placeholder="Skills (comma-separated)" class="w-full p-2 border rounded" rows="2"></textarea>
+      <textarea id="languages" placeholder="Languages (comma-separated)" class="w-full p-2 border rounded" rows="2"></textarea>
       <textarea id="projects" placeholder="Projects" class="w-full p-2 border rounded" rows="2"></textarea>
 
-      <div class="flex flex-col md:flex-row gap-4">
-        <select id="templateSelect" class="p-2 border rounded">
-          <option value="classic">Classic</option>
-          <option value="modern">Modern</option>
-          <option value="tech">Software & IT</option>
-          <option value="corporate">Business & Management</option>
-          <option value="medical">Healthcare & Medicine</option>
-          <option value="engineering">Engineering & Core</option>
-          <option value="finance">Finance & Accounting</option>
-          <option value="academic">Education & Research</option>
-          <option value="creative">Creative & Media</option>
-        </select>
+      <div id="extraSections"></div>
+      <button type="button" id="addExtraBtn" class="mt-2 bg-gray-200 px-4 py-1 rounded">+ Add Extra Section</button>
 
-        <select id="colorSelect" class="p-2 border rounded">
-          <option value="bg-white text-black">White</option>
-          <option value="bg-blue-100 text-blue-900">Blue</option>
-          <option value="bg-green-100 text-green-900">Green</option>
-          <option value="bg-yellow-100 text-yellow-900">Yellow</option>
-          <option value="bg-red-100 text-red-900">Red</option>
-          <option value="bg-purple-100 text-purple-900">Purple</option>
-          <option value="bg-gray-100 text-gray-900">Gray</option>
-        </select>
+      <div class="mt-4">
+        <button type="submit" class="bg-purple-600 text-white px-6 py-2 rounded">Generate Preview</button>
       </div>
-
-      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Generate Preview</button>
     </form>
 
-    <div id="preview" class="mt-6 p-6 rounded"></div>
-    <button id="downloadBtn" class="hidden mt-4 bg-green-600 text-white px-4 py-2 rounded">Download PDF</button>
+    <div class="mt-6">
+      <h2 class="text-lg font-semibold mb-2">Choose Template Color</h2>
+      <div id="templateChoices" class="grid grid-cols-5 gap-2">
+        <div class="template-option" data-color="#fef3c7"><div class="template-box" style="background:#fef3c7"></div>Gold</div>
+        <div class="template-option" data-color="#e0f2fe"><div class="template-box" style="background:#e0f2fe"></div>Blue</div>
+        <div class="template-option" data-color="#ede9fe"><div class="template-box" style="background:#ede9fe"></div>Lavender</div>
+        <div class="template-option" data-color="#d1fae5"><div class="template-box" style="background:#d1fae5"></div>Green</div>
+        <div class="template-option" data-color="#fce7f3"><div class="template-box" style="background:#fce7f3"></div>Pink</div>
+        <div class="template-option" data-color="#e5e7eb"><div class="template-box" style="background:#e5e7eb"></div>Gray</div>
+        <div class="template-option" data-color="#fff7ed"><div class="template-box" style="background:#fff7ed"></div>Orange</div>
+        <div class="template-option" data-color="#f0fdf4"><div class="template-box" style="background:#f0fdf4"></div>Mint</div>
+        <div class="template-option" data-color="#f3f4f6"><div class="template-box" style="background:#f3f4f6"></div>Light Gray</div>
+        <div class="template-option" data-color="#fef9c3"><div class="template-box" style="background:#fef9c3"></div>Lemon</div>
+        <div class="template-option" data-color="None"><div class="template-box" style="background:#fbfbfb"></div>No-Colour</div>     
+      </div>
+    </div>
+
+    <div id="preview" class="mt-8 p-6 rounded border"></div>
   </div>
 
   <script>
     const form = document.getElementById("resumeForm");
     const preview = document.getElementById("preview");
     const downloadBtn = document.getElementById("downloadBtn");
-    const templateSelect = document.getElementById("templateSelect");
-    const colorSelect = document.getElementById("colorSelect");
+    const addExtraBtn = document.getElementById("addExtraBtn");
+    const extraSections = document.getElementById("extraSections");
     const photoInput = document.getElementById("photo");
+    const templateButtons = document.querySelectorAll(".template-option");
     let photoDataURL = "";
+    let previewBg = "white";
 
     photoInput.addEventListener("change", () => {
       const file = photoInput.files[0];
@@ -137,46 +111,47 @@
       }
     });
 
+    templateButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        previewBg = btn.dataset.color;
+        renderPreview();
+      });
+    });
+
     function renderPreview() {
-      const fullName = document.getElementById('fullName').value;
-      const email = document.getElementById('email').value;
-      const phone = document.getElementById('phone').value;
-      const linkedin = document.getElementById('linkedin').value;
-      const github = document.getElementById('github').value;
-      const summary = document.getElementById('summary').value;
-      const experience = document.getElementById('experience').value;
-      const education = document.getElementById('education').value;
-      const skills = document.getElementById('skills').value;
-      const languages = document.getElementById('languages').value;
-      const projects = document.getElementById('projects').value;
-      const template = templateSelect.value;
-      const colorTheme = colorSelect.value;
-
-      const templateStyles = {
-        classic: 'font-serif',
-        modern: 'font-sans tracking-wide',
-        tech: 'font-mono text-sm bg-gray-50 border border-gray-200 p-4',
-        corporate: 'font-sans text-base bg-white shadow-md p-4',
-        medical: 'font-sans text-base border-l-4 border-red-300 pl-4',
-        engineering: 'font-mono text-sm bg-gray-100 p-4 border',
-        finance: 'font-serif text-base italic',
-        academic: 'font-serif text-base border-t-4 border-blue-300 pt-2',
-        creative: 'font-cursive text-lg italic text-purple-700'
-      };
-
-      const themeClass = `${templateStyles[template] || 'font-sans'} ${colorTheme}`;
+      const getValue = id => document.getElementById(id).value;
+      const fullName = getValue("fullName");
+      const email = getValue("email");
+      const phone = getValue("phone");
+      const linkedin = getValue("linkedin");
+      const github = getValue("github");
+      const summary = getValue("summary");
+      const experience = getValue("experience").replace(/\n/g, "<br>");
+      const education = getValue("education").replace(/\n/g, "<br>");
+      const skills = getValue("skills");
+      const languages = getValue("languages");
+      const projects = getValue("projects").replace(/\n/g, "<br>");
 
       const links = [
         linkedin && `<a href="${linkedin}" target="_blank" class="underline text-blue-600">LinkedIn</a>`,
         github && `<a href="${github}" target="_blank" class="underline text-blue-600">GitHub</a>`
-      ].filter(Boolean).join(' | ');
+      ].filter(Boolean).join(" | ");
 
-      const photoHTML = photoDataURL ? `<img src="${photoDataURL}" alt="Profile Photo" class="w-24 h-24 rounded-full object-cover">` : '';
+      const photoHTML = photoDataURL ? `<img src="${photoDataURL}" alt="Photo" class="w-24 h-24 rounded-full object-cover" />` : "";
+
+      let extraHTML = "";
+      document.querySelectorAll(".extra-box").forEach(box => {
+        const head = box.querySelector(".extra-head").value;
+        const info = box.querySelector(".extra-info").value.replace(/\n/g, "<br>");
+        if (head && info) {
+          extraHTML += `<h2 class="text-xl font-semibold mt-4">${head}</h2><p>${info}</p>`;
+        }
+      });
+      const bgStyle = previewBg === "none" ? "white" : previewBg;
 
       const html = `
-        <div class="${themeClass} space-y-4">
-          <div class="flex items-center gap-4">
-            ${photoHTML}
+        <div class="space-y-4" style="background-color: ${previewBg}; padding: 1rem; border-radius: 0.5rem;">
+          <div class="flex gap-4 items-center">${photoHTML}
             <div>
               <h1 class="text-2xl font-bold">${fullName}</h1>
               <p>${email} | ${phone}</p>
@@ -184,46 +159,57 @@
             </div>
           </div>
           <hr>
-          <h2 class="text-xl font-semibold">Summary</h2>
-          <p>${summary}</p>
-          <h2 class="text-xl font-semibold">Experience</h2>
-          <p>${experience.replace(/\n/g, '<br>')}</p>
-          <h2 class="text-xl font-semibold">Education</h2>
-          <p>${education.replace(/\n/g, '<br>')}</p>
-          <h2 class="text-xl font-semibold">Skills</h2>
-          <p>${skills}</p>
-          <h2 class="text-xl font-semibold">Languages</h2>
-          <p>${languages}</p>
-          <h2 class="text-xl font-semibold">Projects</h2>
-          <p>${projects.replace(/\n/g, '<br>')}</p>
-        </div>
-      `;
+          <h2 class="text-xl font-semibold">Summary</h2><p>${summary}</p>
+          <h2 class="text-xl font-semibold">Experience</h2><p>${experience}</p>
+          <h2 class="text-xl font-semibold">Education</h2><p>${education}</p>
+          <h2 class="text-xl font-semibold">Skills</h2><p>${skills}</p>
+          <h2 class="text-xl font-semibold">Languages</h2><p>${languages}</p>
+          <h2 class="text-xl font-semibold">Projects</h2><p>${projects}</p>
+          ${extraHTML}
+        </div>`;
 
       preview.innerHTML = html;
-      downloadBtn.classList.toggle('hidden', !fullName);
     }
 
-    form.addEventListener("submit", function (e) {
+    form.addEventListener("submit", e => {
       e.preventDefault();
       renderPreview();
     });
 
-    const inputs = form.querySelectorAll("input, textarea");
-    inputs.forEach(input => input.addEventListener("input", renderPreview));
-    templateSelect.addEventListener("change", renderPreview);
-    colorSelect.addEventListener("change", renderPreview);
-
-    downloadBtn.addEventListener("click", () => {
-      html2pdf().from(preview).save("resume.pdf");
+    document.querySelectorAll("input, textarea").forEach(input => {
+      input.addEventListener("input", renderPreview);
     });
 
-    window.onload = () => {
-      const savedTemplate = localStorage.getItem('selectedTemplate');
-      if (savedTemplate) {
-        templateSelect.value = savedTemplate;
-      }
+    addExtraBtn.addEventListener("click", () => {
+      const section = document.createElement("div");
+      section.classList.add("extra-box");
+      section.innerHTML = `
+        <input placeholder="Section Heading" class="extra-head p-2 border rounded w-full mb-2"/>
+        <textarea placeholder="Information" rows="2" class="extra-info p-2 border rounded w-full"></textarea>`;
+      extraSections.appendChild(section);
+    });
+
+    downloadBtn.addEventListener("click", () => {
+      const opt = {
+        margin: 0.5,
+        filename: 'resume.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      };
+      html2pdf().set(opt).from(preview).save();
+    });
+
+    document.getElementById("generateSummaryBtn").addEventListener("click", () => {
+      const exp = document.getElementById("experience").value;
+      const edu = document.getElementById("education").value;
+      const skill = document.getElementById("skills").value;
+      const summaryText = `A motivated professional with experience in ${exp.split("\n")[0] || "various fields"}, strong academic background in ${edu.split("\n")[0] || "relevant domains"}, and skills including ${skill || "key technologies"}. Seeking impactful roles to grow and contribute.`;
+      document.getElementById("summary").value = summaryText;
       renderPreview();
-    };
+    });
+
+    window.onload = renderPreview;
   </script>
 </body>
 </html>
