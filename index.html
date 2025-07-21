@@ -3,83 +3,141 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InstaResume – AI Resume Builder</title>
+  <title>InstaResume Builder</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.3/html2pdf.bundle.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #ffe0f7);
+      background-attachment: fixed;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .theme-selector {
+      margin-bottom: 1rem;
+    }
+
+    .resume-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      max-width: 800px;
+      width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 1.5rem;
+    }
+
+    select, button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .color-palette {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin-top: 1rem;
+    }
+
+    .color-button {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid white;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .color-button:hover {
+      transform: scale(1.1);
+    }
+  </style>
 </head>
-<body class="bg-gradient-to-br from-gray-50 via-blue-50 to-green-100 min-h-screen text-gray-800">
-  <div class="max-w-6xl mx-auto p-6">
-    <h1 class="text-4xl font-bold mb-6 text-center text-blue-800">InstaResume – AI Resume Builder</h1>
+<body class="bg-gray-200 p-6">
+  <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
+    <h1 class="text-3xl font-bold mb-4">InstaResume Builder</h1>
+    <form id="resumeForm" class="space-y-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <input id="fullName" placeholder="Full Name" class="p-2 border rounded" required />
+        <input id="email" placeholder="Email" class="p-2 border rounded" required />
+        <input id="phone" placeholder="Phone Number" class="p-2 border rounded" required />
+        <input id="linkedin" placeholder="LinkedIn URL" class="p-2 border rounded" />
+        <input id="github" placeholder="GitHub URL" class="p-2 border rounded" />
+        <input id="photo" type="file" accept="image/*" class="p-2 border rounded" />
+      </div>
+      <textarea id="summary" placeholder="Professional Summary" class="w-full p-2 border rounded" rows="3"></textarea>
+      <textarea id="experience" placeholder="Work Experience" class="w-full p-2 border rounded" rows="3"></textarea>
+      <textarea id="education" placeholder="Education" class="w-full p-2 border rounded" rows="3"></textarea>
+      <textarea id="skills" placeholder="Skills" class="w-full p-2 border rounded" rows="2"></textarea>
+      <textarea id="languages" placeholder="Languages" class="w-full p-2 border rounded" rows="2"></textarea>
+      <textarea id="projects" placeholder="Projects" class="w-full p-2 border rounded" rows="2"></textarea>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-      <!-- Form Section -->
-      <div class="bg-white p-6 rounded-3xl shadow-2xl border border-blue-100">
-        <h2 class="text-xl font-semibold mb-4 text-blue-700">📝 Enter Your Details</h2>
-        <form id="resumeForm" class="space-y-4">
-          <input type="text" id="fullName" placeholder="Full Name" class="w-full p-3 border rounded-lg" required />
-          <input type="text" id="email" placeholder="Email" class="w-full p-3 border rounded-lg" required />
-          <input type="text" id="phone" placeholder="Phone" class="w-full p-3 border rounded-lg" />
-          <input type="text" id="linkedin" placeholder="LinkedIn URL (optional)" class="w-full p-3 border rounded-lg" />
-          <input type="text" id="github" placeholder="GitHub URL (optional)" class="w-full p-3 border rounded-lg" />
-          <input type="file" id="photoUpload" accept="image/*" class="w-full p-3 border rounded-lg" />
-          <textarea id="summary" placeholder="Professional Summary" class="w-full p-3 border rounded-lg"></textarea>
-          <textarea id="experience" placeholder="Experience (e.g. Company, Role, Years)" class="w-full p-3 border rounded-lg"></textarea>
-          <textarea id="education" placeholder="Education (e.g. Degree, University)" class="w-full p-3 border rounded-lg"></textarea>
-          <textarea id="skills" placeholder="Skills (comma-separated)" class="w-full p-3 border rounded-lg"></textarea>
-          <textarea id="languages" placeholder="Languages Known" class="w-full p-3 border rounded-lg"></textarea>
-          <textarea id="projects" placeholder="Projects" class="w-full p-3 border rounded-lg"></textarea>
+      <div class="flex flex-col md:flex-row gap-4">
+        <select id="templateSelect" class="p-2 border rounded">
+          <option value="classic">Classic</option>
+          <option value="modern">Modern</option>
+          <option value="tech">Software & IT</option>
+          <option value="corporate">Business & Management</option>
+          <option value="medical">Healthcare & Medicine</option>
+          <option value="engineering">Engineering & Core</option>
+          <option value="finance">Finance & Accounting</option>
+          <option value="academic">Education & Research</option>
+          <option value="creative">Creative & Media</option>
+        </select>
 
-          <div class="flex gap-4 items-center">
-            <label class="text-sm font-medium">Choose Template:</label>
-            <select id="templateSelect" class="p-3 border rounded-lg">
-              <option value="classic">Classic Blue</option>
-              <option value="sleek">Sleek Black</option>
-              <option value="green">Professional Green</option>
-              <option value="lavender">Soft Lavender</option>
-              <option value="sunset">Warm Sunset</option>
-            </select>
-          </div>
-
-          <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 shadow">Generate Resume</button>
-        </form>
+        <select id="colorSelect" class="p-2 border rounded">
+          <option value="bg-white text-black">White</option>
+          <option value="bg-blue-100 text-blue-900">Blue</option>
+          <option value="bg-green-100 text-green-900">Green</option>
+          <option value="bg-yellow-100 text-yellow-900">Yellow</option>
+          <option value="bg-red-100 text-red-900">Red</option>
+          <option value="bg-purple-100 text-purple-900">Purple</option>
+          <option value="bg-gray-100 text-gray-900">Gray</option>
+        </select>
       </div>
 
-      <!-- Resume Preview Section -->
-      <div class="bg-white p-6 rounded-3xl shadow-2xl border border-green-100">
-        <h2 class="text-xl font-semibold mb-2 text-green-800">📄 Resume Preview</h2>
-        <div id="resumePreview" class="p-4 border rounded-lg text-sm leading-relaxed space-y-2 bg-white">
-          <p class="text-gray-400">Fill the form and click generate to see your resume here.</p>
-        </div>
-        <button id="downloadBtn" class="mt-4 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 hidden">
-          Download PDF
-        </button>
-      </div>
-    </div>
+      <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Generate Preview</button>
+    </form>
+
+    <div id="preview" class="mt-6 p-6 rounded"></div>
+    <button id="downloadBtn" class="hidden mt-4 bg-green-600 text-white px-4 py-2 rounded">Download PDF</button>
   </div>
 
   <script>
-    const form = document.getElementById('resumeForm');
-    const preview = document.getElementById('resumePreview');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const templateSelect = document.getElementById('templateSelect');
-    const photoInput = document.getElementById('photoUpload');
+    const form = document.getElementById("resumeForm");
+    const preview = document.getElementById("preview");
+    const downloadBtn = document.getElementById("downloadBtn");
+    const templateSelect = document.getElementById("templateSelect");
+    const colorSelect = document.getElementById("colorSelect");
+    const photoInput = document.getElementById("photo");
+    let photoDataURL = "";
 
-    let uploadedImage = '';
-
-    photoInput.addEventListener('change', function () {
-      const file = this.files[0];
+    photoInput.addEventListener("change", () => {
+      const file = photoInput.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function (e) {
-          uploadedImage = `<img src="${e.target.result}" alt="Photo" class="w-24 h-24 object-cover rounded-full mb-2"/>`;
+        reader.onload = () => {
+          photoDataURL = reader.result;
+          renderPreview();
         };
         reader.readAsDataURL(file);
       }
     });
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-
+    function renderPreview() {
       const fullName = document.getElementById('fullName').value;
       const email = document.getElementById('email').value;
       const phone = document.getElementById('phone').value;
@@ -91,56 +149,81 @@
       const skills = document.getElementById('skills').value;
       const languages = document.getElementById('languages').value;
       const projects = document.getElementById('projects').value;
+      const template = templateSelect.value;
+      const colorTheme = colorSelect.value;
 
-      const theme = templateSelect.value;
-      let themeClass = '';
-      if (theme === 'sleek') themeClass = 'bg-gray-900 text-white';
-      else if (theme === 'green') themeClass = 'bg-green-100 text-green-900';
-      else if (theme === 'lavender') themeClass = 'bg-purple-100 text-purple-900';
-      else if (theme === 'sunset') themeClass = 'bg-yellow-100 text-orange-900';
-      else themeClass = 'bg-blue-100 text-blue-900';
+      const templateStyles = {
+        classic: 'font-serif',
+        modern: 'font-sans tracking-wide',
+        tech: 'font-mono text-sm bg-gray-50 border border-gray-200 p-4',
+        corporate: 'font-sans text-base bg-white shadow-md p-4',
+        medical: 'font-sans text-base border-l-4 border-red-300 pl-4',
+        engineering: 'font-mono text-sm bg-gray-100 p-4 border',
+        finance: 'font-serif text-base italic',
+        academic: 'font-serif text-base border-t-4 border-blue-300 pt-2',
+        creative: 'font-cursive text-lg italic text-purple-700'
+      };
 
-      const linkedinHTML = linkedin ? `<a href="${linkedin}" target="_blank" class="underline text-blue-600">LinkedIn</a>` : '';
-      const githubHTML = github ? `<a href="${github}" target="_blank" class="underline text-blue-600">GitHub</a>` : '';
-      const links = [linkedinHTML, githubHTML].filter(Boolean).join(' | ');
+      const themeClass = `${templateStyles[template] || 'font-sans'} ${colorTheme}`;
+
+      const links = [
+        linkedin && `<a href="${linkedin}" target="_blank" class="underline text-blue-600">LinkedIn</a>`,
+        github && `<a href="${github}" target="_blank" class="underline text-blue-600">GitHub</a>`
+      ].filter(Boolean).join(' | ');
+
+      const photoHTML = photoDataURL ? `<img src="${photoDataURL}" alt="Profile Photo" class="w-24 h-24 rounded-full object-cover">` : '';
 
       const html = `
-        <div class="rounded-xl p-5 ${themeClass}">
-          ${uploadedImage}
-          <h1 class="text-2xl font-bold">${fullName}</h1>
-          <p class="text-sm">${email} | ${phone}</p>
-          ${links ? `<p class="text-sm">${links}</p>` : ''}
-          <hr class="my-2">
-          <h2 class="text-lg font-semibold">Summary</h2>
+        <div class="${themeClass} space-y-4">
+          <div class="flex items-center gap-4">
+            ${photoHTML}
+            <div>
+              <h1 class="text-2xl font-bold">${fullName}</h1>
+              <p>${email} | ${phone}</p>
+              <p>${links}</p>
+            </div>
+          </div>
+          <hr>
+          <h2 class="text-xl font-semibold">Summary</h2>
           <p>${summary}</p>
-          <h2 class="text-lg font-semibold mt-2">Experience</h2>
+          <h2 class="text-xl font-semibold">Experience</h2>
           <p>${experience.replace(/\n/g, '<br>')}</p>
-          <h2 class="text-lg font-semibold mt-2">Education</h2>
+          <h2 class="text-xl font-semibold">Education</h2>
           <p>${education.replace(/\n/g, '<br>')}</p>
-          <h2 class="text-lg font-semibold mt-2">Skills</h2>
+          <h2 class="text-xl font-semibold">Skills</h2>
           <p>${skills}</p>
-          <h2 class="text-lg font-semibold mt-2">Languages</h2>
+          <h2 class="text-xl font-semibold">Languages</h2>
           <p>${languages}</p>
-          <h2 class="text-lg font-semibold mt-2">Projects</h2>
+          <h2 class="text-xl font-semibold">Projects</h2>
           <p>${projects.replace(/\n/g, '<br>')}</p>
         </div>
       `;
 
       preview.innerHTML = html;
-      downloadBtn.classList.remove('hidden');
+      downloadBtn.classList.toggle('hidden', !fullName);
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      renderPreview();
     });
 
-    downloadBtn.addEventListener('click', function () {
-      const element = document.getElementById('resumePreview');
-      const opt = {
-        margin: 0.3,
-        filename: 'resume.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
-      };
-      html2pdf().from(element).set(opt).save();
+    const inputs = form.querySelectorAll("input, textarea");
+    inputs.forEach(input => input.addEventListener("input", renderPreview));
+    templateSelect.addEventListener("change", renderPreview);
+    colorSelect.addEventListener("change", renderPreview);
+
+    downloadBtn.addEventListener("click", () => {
+      html2pdf().from(preview).save("resume.pdf");
     });
+
+    window.onload = () => {
+      const savedTemplate = localStorage.getItem('selectedTemplate');
+      if (savedTemplate) {
+        templateSelect.value = savedTemplate;
+      }
+      renderPreview();
+    };
   </script>
 </body>
 </html>
